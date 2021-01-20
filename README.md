@@ -1,4 +1,2 @@
-# qmee_
-repo for qmee class
-My name is Dominika and I like cats
-"This is a line from RStudio"
+# qmee
+The dataset I have for this weeks assignment is from the upper respiratory tract (URT) microbiome of 44 individuals. The individuals provided nasal and saliva swab samples over the course of a longitudinal study in 2016-2019. There are Baseline, Event and Follow Up samples that were provided. 
