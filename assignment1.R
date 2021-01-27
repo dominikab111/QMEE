@@ -4,7 +4,11 @@
 # Setup -------------------------------------
 
 #set your working directory for your computer
-setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+## JD: No. Don't put this in your script.
+## It turns out I don't have a directory called Users, so I can't make a directory called '/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis' even if I wanted to.
+## setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+
+## Be selective about which libraries you call; if you are trying to be reproducible and careful
 library(vegan)
 library(tidyverse)
 library(lme4)
@@ -16,6 +20,7 @@ library(ggplot2)
 library(microbiome)
 library(knitr)
 
+## JD: I have no access to these files
 #import csv files ----
 seqtab = read.csv("asvtab.csv") #asv frequency table
 taxatab = read.csv("taxatab.csv") #taxonomy file
