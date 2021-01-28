@@ -9,14 +9,25 @@
 ## setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
 
 ## Be selective about which libraries you call; if you are trying to be reproducible and careful
+
+## BMB: I would repeat JD's comment here; do you really need all of this stuff?
 library(vegan)
 library(tidyverse)
+library(phyloseq)
+
+## BMB: I can run
+if (FALSE) {
+library(ggplot2)
 library(lme4)
 library(glmmTMB)
 library(emmeans)
 library(boot)
-library(phyloseq)
-library(ggplot2)
+}
+
+## BMB: may be worth noting that this is a Bioconductor package
+## install.packages("BiocManager"); BiocManager::install("microbiome")
+## (that depends on who you are collaborating with and whether
+##  they are familiar with Bioconductor machinery)
 library(microbiome)
 library(knitr)
 
@@ -63,6 +74,8 @@ head(taxtab)
 #checks if the rownames in samdat match the colnames of asvtab. prints a logical response
 #next line will print out the sample IDs that do not match
 
+## BMB: you could add stopifnot() here (this will automatically stop
+##  your script if some condition is not as you expected)
 all(rownames(samdat_clean) %in% colnames(asvtab))
 rownames(samdat_clean)[!(rownames(samdat_clean) %in% colnames(asvtab))]
 
@@ -108,13 +121,16 @@ sample_sums(dat)
 #host bacteria is removed after this step
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
 
-#rarify the data by removing less than 2500 reads
+#rarefy the data by removing less than 2500 reads
 dat = prune_samples(sample_sums(dat)>2500, dat)
 
 #check to see how many reads were removed
 dat #in this case it was 17
 
 samdat_clean = data.frame(sample_data(dat)) #make a dataframe
+
+## BMB: you probably don't need phyloseq machinery if all you want
+## to do is filter ...
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
 
@@ -127,7 +143,8 @@ alpha_diversity2 <- microbiome::alpha(dat_rel, index = "diversity_inverse_simpso
 alpha_diversityrel <- microbiome::alpha(dat_rel, index = "dominance_relative")
 alpha_diversityabs <- microbiome::alpha(dat_rel, index = "dominance_absolute")
 
-print(alpha_diversitycalc)
+## BMB: this line didn't work
+## print(alpha_diversitycalc)
 print(alpha_diversity2)
 print(alpha_diversityrel)
 print(alpha_diversityabs)
@@ -137,4 +154,7 @@ print(alpha_diversityabs)
 ns_rel_otu <- data.frame(phyloseq::otu_table(dat_rel))
 ns_rel_otu <- t(ns_rel_otu)
 dist.mat <- vegan::vegdist(ns_rel_otu, method = "bray")
+## BMB: it probably doesn't make sense to print this giant object out ...
+##  what are you going to see?
+##  have you considered heatmap(as.matrix(dist.mat)) ... ?
 print(dist.mat)
