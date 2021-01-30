@@ -28,11 +28,10 @@ library(boot)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
 ## (that depends on who you are collaborating with and whether
 ##  they are familiar with Bioconductor machinery)
+## JD: phyloseq as well
 library(microbiome)
 library(knitr)
 
-## JD: I have no access to these files
-#import csv files ----
 seqtab = read.csv("asvtab.csv") #asv frequency table
 taxatab = read.csv("taxatab.csv") #taxonomy file
 mapfile= read.csv("updated_samplemap.csv") #sample information file
@@ -158,3 +157,5 @@ dist.mat <- vegan::vegdist(ns_rel_otu, method = "bray")
 ##  what are you going to see?
 ##  have you considered heatmap(as.matrix(dist.mat)) ... ?
 print(dist.mat)
+
+## Grade 1.9/3
