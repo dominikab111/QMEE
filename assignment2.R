@@ -8,7 +8,6 @@ library(vegan)
 library(tidyverse)
 library(phyloseq)
 library(microbiome) ## install.packages("BiocManager"); BiocManager::install("microbiome")
-library(knitr)
 
 #import csv files ----
 seqtab = read.csv("asvtab.csv") #asv frequency table
@@ -124,9 +123,86 @@ plot_richness(dat.sal, measures = c("Shannon", "Simpson"))
 
 #to make up for this I produced a heat map with bray-curtis dissimilarity as well 
 
-# Plotting Beta- Diversity ----------------------------------------------------------
+# Plotting Beta-Diversity ----------------------------------------------------------
 
 ns_rel_otu <- data.frame(phyloseq::otu_table(dat_rel))
 ns_rel_otu <- t(ns_rel_otu)
 dist.mat <- vegan::vegdist(ns_rel_otu, method = "bray")
 heatmap(as.matrix(dist.mat))
+
+# Plotting relative abundance
+phyloseq::plot_bar(dat_rel, fill = "Genus") +
+  geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "stack") +
+  labs(x = "", y = "Relative Abundance\n") +
+  facet_wrap(~ Sample.Type, scales = "free") +
+  theme(panel.background = element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+#histogram of age
+hist(mapfile$Age,
+     main= "Histogram of Participants Age",
+     xlab="Age",
+     border= "navy blue",
+     col="maroon",
+     breaks=10,
+     prob=TRUE)
+
+lines(density(mapfile$Age))
+
+
+#Plotting PCoA relative abundance 
+
+relabunbray.ord <- ordinate(rel_abun_lessHOST_prune, method = "PCoA", distance = "bray")
+relabunbray.plot <- plot_ordination(rel_abun_lessHOST_prune, relabunbray.ord,
+                                    color = "illrun",
+                                    axes = c(2,3),
+                                    title = "Bray-Curtis relative abundance")
+relabunbray.plot+geom_point(size=3)+scale_color_manual(values=colours)
+p2.plot <- plot_ordination(rel_abun_lessHOST_prune, relabunbray.ord,
+                           color = "illrun",
+                           axes = c(1, 2),
+                           title = "Bray-Curtis relative abundance")
+p2.plot+geom_point(size=3)+scale_color_manual(values=c("#e6194B", "#3cb44b", 
+                                                       "#4363d8", "#f58231", "#911eb4",
+                                                       "#42d4f4", "#f032e6", "#bfef45",
+                                                       "#fabebe", "#469990", "#e6beff",
+                                                       "#9A6324", "#fffac8", "#800000",
+                                                       "#aaffc3", "#808000", "#ffd8b1",
+                                                       "#000075", "#a9a9a9", "#ffffff",
+                                                       "#ffe119","#000000"))
+rarefiedbray.ord <- ordinate(dat_r, method = "PCoA", distance = "bray")
+p3.plot <- plot_ordination(dat_r, rarefiedbray.ord,
+                           color = "illrun",
+                           axes = c(1,2),
+                           title = "Bray-Curtis rarefied 10000")
+p3.plot+geom_point(size=3)+scale_color_manual(values=c("#e6194B", "#3cb44b", "#ffe119",
+                                                       "#4363d8", "#f58231", "#911eb4",
+                                                       "#42d4f4", "#f032e6", "#bfef45",
+                                                       "#fabebe", "#469990", "#e6beff",
+                                                       "#9A6324", "#fffac8", "#800000",
+                                                       "#aaffc3", "#808000", "#ffd8b1",
+                                                       "#000075", "#a9a9a9", "#ffffff",
+                                                       "#000000"))
+
+## Taxa bar plots --------------------------------------
+top20 <- names(sort(taxa_sums(dat_lessExp2_lessHOST), decreasing=TRUE))[1:20]
+dat.top20 <- transform_sample_counts(dat_lessExp2_lessHOST, function(OTU) OTU/sum(OTU))
+dat.top20 <- prune_taxa(top20, dat.top20)
+
+plot_bar(dat.top20, fill='Genus')
+
+
+# Plotting alpha diversity -----------------------------
+
+#alpha diversity
+plot_richness(dat_rel, x="illrun", measures=c("Shannon", "Simpson"))
+#alpha = estimate_richness(dat_lessHOST, measures=c("Shannon", "Simpson"))
+#write.csv(alpha, file="alpha_Shannon_Simpson_lessHOST.csv")
+alpha1 = plot_richness(dat_r, x="illrun", measures=c("Shannon", "Simpson"), color = "illrun")
+alpha1 + scale_color_manual(values = colours2) + geom_point(size=3)
+
+
+ggplot(tbl, aes(Treatment, Count)) +
+  geom_boxplot() +
+  theme_bw()+facet_wrap("Group", scales="free")+ggtitle("GFF2 Experiment")
