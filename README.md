@@ -5,7 +5,7 @@ The data set I have for this weeks assignment includes a taxanomy table, asv tab
 # Assignment 2
 I would like to investigate age-related changes of the URT microbiome within healthy adults. I would investigate these changes with stability over different time points using alpha and beta diversity measurements. I would also investigate compositional changes within the URT microbiome of healthy adults using taxonomic bar plots. I would divide these investigations into the following components:
 
-1. ALpha diversity measurements between Baseline and Follow Up samples of healthy adults.
+1. Alpha diversity measurements between Baseline and Follow Up samples of healthy adults.
 2. Beta diversity measurements between 18-39 (young), 40-64(mid aged), and 65+ (older) adults at Baseline.
 3. Beta diversity measurements between healthy adults at nasal and oral sample sites.
 4. Taxonomic bar plots to investigate compositional changes at Baseline and between Baseline and Follow Up samples.
