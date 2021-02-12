@@ -1,0 +1,7 @@
+Hypothesis for my data
+
+Increasing biological age is associated with less diverse and unstable URT microbiome, which contributes to the increased probability of acquiring respiratory infections.
+
+I would statistically test the diversity of this hypothesis by performing Kruskall Ð Wallis and PERMANOVA tests with alpha and beta diversity, respectively. I would also use DeSeq2 and ANCOM-BC  to test significance between the taxonomic composition of the URT microbiome at various time points (Baseline, Event, Follow Up) to measure stability. I would investigate how this contributes to the increased probability of acquiring respiratory infections by counting the # of infections we receive during cold and flu season using information from our health and immune questionnaire.   
+
+
