@@ -2,6 +2,23 @@ Hypothesis for my data
 
 Increasing biological age is associated with less diverse and unstable URT microbiome, which contributes to the increased probability of acquiring respiratory infections.
 
-I would statistically test the diversity of this hypothesis by performing Kruskall � Wallis and PERMANOVA tests with alpha and beta diversity, respectively. I would also use DeSeq2 and ANCOM-BC  to test significance between the taxonomic composition of the URT microbiome at various time points (Baseline, Event, Follow Up) to measure stability. I would investigate how this contributes to the increased probability of acquiring respiratory infections by counting the # of infections we receive during cold and flu season using information from our health and immune questionnaire.   
+I would statistically test the diversity of this hypothesis by performing Kruskall Ð Wallis and PERMANOVA tests with alpha and beta diversity, respectively. I would also use DeSeq2 and ANCOM-BC  to test significance between the taxonomic composition of the URT microbiome at various time points (Baseline, Event, Follow Up) to measure stability. I would investigate how this contributes to the increased probability of acquiring respiratory infections by counting the # of infections we receive during cold and flu season using information from our health and immune questionnaire.   
 
 
+## BMB
+
+This is a pretty clearly stated hypothesis. I've got lots of questions, though. What exactly do you mean by "unstable" in this case?  Are you thinking about variation over time? Is there any prior evidence of this sort of mechanism (i.e. increased microbiome diversity being associated with improved host health, improved protection against infectious diseases)? What are your thoughts about mechanism, i.e. _why_ do you think this association might exist? (As you probably know there is a big literature on relationships between diversity and ecosystem function [in this case the 'ecosystem' is the host], but the mechanistic arguments there mostly have to do with resource uptake or differential tolerance of different kinds of enviromental variation (in the case of the diversity-stability argument).)  What is the relationship between the microbiome at the time you're measuring it and the microbiome at the time when people get sick?
+
+Statistically:
+
+* going back to beta diversity; how are you quantifying this? In samples over time?
+* PERMANOVA generally tells you that communities differ in some way between groups (i.e. comparing variation within and among groups). What are your groups here?
+* How are you planning to measure alpha diversity? This matters (JD has strong opinions about this). What taxonomic level, and what diversity measure(s)?
+* What is the 'event' in your models?
+* DESEQ2 is going to tell you about differences *in individual taxa/OTUs*, not about differences in the overall community.
+
+My main concern about this study is that you're going to be measuring the correlation between two *extremely* noisy measurements (microbiomes vary a lot, and our measurements of them are noisy; whether people get infections depends on a huge number of factors, and how and whether they report them accurately also varies enormously).  How big is your sample size? How many infections would you expect people to get/report over the course of a season? (I would guess 0-2, with a median of 0 or 1 ...) Have you thought about your statistical power to detect a given effect size (e.g., suppose a 10% change in microbial diversity leads to a 10% decrease in infection probability ...) ???
+
+Haegeman, Bart, Jérôme Hamelin, John Moriarty, Peter Neal, Jonathan Dushoff, and Joshua S. Weitz. “Robust Estimation of Microbial Diversity in Theory and in Practice.” The ISME Journal 7, no. 6 (June 2013): 1092–1101. https://doi.org/10.1038/ismej.2013.10.
+
+## grade: 2.2/3 
