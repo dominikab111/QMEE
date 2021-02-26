@@ -205,4 +205,6 @@ alpha1 + scale_color_manual(values = colours2) + geom_point(size=3)
 
 ggplot(tbl, aes(Treatment, Count)) +
   geom_boxplot() +
-  theme_bw()+facet_wrap("Group", scales="free")+ggtitle("GFF2 Experiment")
+    theme_bw()+facet_wrap("Group", scales="free")+ggtitle("GFF2 Experiment")
+
+saveRDS(dat_rel, file="dat_rel.rds")
