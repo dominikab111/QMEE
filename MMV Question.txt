@@ -1,0 +1,26 @@
+MMV Question
+
+P(A|B) = P(B|A) * P(A) 
+                ------------------
+		P(B)
+
+P(disease|positive) = P(disease) * P(positive|disease)
+		            ----------------------------------------
+	P(disease)P(positive|disease) + P(nodisease)P(positive|nodisease)
+
+P(disease|positive) = (0.01) (1)
+		      --------------------         = 0.167 or ~ 17%
+		(0.01) (1) + (0.99) (0.05)
+
+
+## BMB: nice.
+
+The probability that the person from the population have MMV is 16.7 or ~17%.
+
+After learning that my friend has a positive rapid test for MMV, I could infer that they have an 83.3% chance of being negative. I would strongly encourage that my friend gets a second test or a third rapid test to confirm whether or not they have MMV. Getting re-tested would allow them to gather more assumptions prior to coming to the conclusion they have acquired the virus and are ill. I would also suggest that the testing be improved for MMV to ensure accuracy of results.
+
+## BMB: good answers, although whether re-testing is effective or not depends on *why* the test failed. It might fail for
+## person-specific reasons (e.g. genetics), so that re-testing doesn't actually help.
+
+## (note we do still prefer file names without spaces in them!)
+

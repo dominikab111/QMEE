@@ -11,12 +11,25 @@ library(lme4)
 library(glmmTMB)
 library(emmeans)
 library(boot)
+<<<<<<< HEAD
 library(phyloseq)
 library(ggplot2)
 library(microbiome)
 library(knitr)
 
 #import csv files ----
+=======
+}
+
+## BMB: may be worth noting that this is a Bioconductor package
+## install.packages("BiocManager"); BiocManager::install("microbiome")
+## (that depends on who you are collaborating with and whether
+##  they are familiar with Bioconductor machinery)
+## JD: phyloseq as well
+library(microbiome)
+library(knitr)
+
+>>>>>>> d82a12a4436696b98b0d657e18a7d5ba93a45bb3
 seqtab = read.csv("asvtab.csv") #asv frequency table
 taxatab = read.csv("taxatab.csv") #taxonomy file
 mapfile= read.csv("updated_samplemap.csv") #sample information file
@@ -133,3 +146,5 @@ ns_rel_otu <- data.frame(phyloseq::otu_table(dat_rel))
 ns_rel_otu <- t(ns_rel_otu)
 dist.mat <- vegan::vegdist(ns_rel_otu, method = "bray")
 print(dist.mat)
+
+## Grade 1.9/3

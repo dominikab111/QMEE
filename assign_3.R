@@ -23,7 +23,8 @@ samdat_clean <- readRDS("samdat_clean.RData")
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
 
-dat_rel = transform_sample_counts(datp, function(x) x/sum(x)) 
+## dat_rel = transform_sample_counts(datp, function(x) x/sum(x))
+dat_rel <- readRDS("dat_rel.rds")
 
 #subset data into nasal and oral samples
 dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')

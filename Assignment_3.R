@@ -1,4 +1,4 @@
-# Assignment 3 - producing beta diveristy and relative abundance plots
+# Assignment 3 objective- producing beta diveristy and relative abundance plots
 
 # Setup ------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ library(dplyr)
 #BiocManager::install("phyloseq")
 #install.packages(c("devtools", "RcppEigen", "RcppParallel", "Rtsne", "ggforce", "units"))
 library(ggplot2)
+library(schuyler-smith/phylosmith)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
 
 #setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
@@ -78,6 +79,8 @@ asv <- asvtab[,2:274]
 asvtable <- data.matrix(asv,rownames.force = NA)
 class(asvtable)
 str(asvtable) #make sure asvtab is integers and characters, checks the structure of the data
+## BMB: again, it would be good to test and AUTOMATICALLY
+## stop if something looks wrong
 
 #converting dataframe into character matrix
 dim(taxtab) #to determine how to truncate
@@ -105,18 +108,25 @@ sample_data(dat)[sample_sums(dat) < 2500,]
 #filter out mitochondria bacteria from host
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
   
-samdat_clean = data.frame(sample_data(dat)) #make a dataframe
+  #remove any samples with less than 2500 reads
+ 
+  datp = prune_samples(sample_sums(dat)>2500, dat)
   
-#transform asv counts into relative abundance data (i.e. calculate relative abundance) 
+  #check to see how many samples we have left after filtering
+  ncol(get_sample(datp))
   
-dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
+  samdat_clean = data.frame(sample_data(datp)) #make a dataframe
   
-#subset data into nasal and oral samples
-dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
-dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
+  #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
+  
+  dat_rel = transform_sample_counts(datp, function(x) x/sum(x)) 
+  
+  #subset data into nasal and oral samples
+  dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
+  dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
   
 #-------------------------------------------------------------------------------
-## Assignment 3 starts on line 122
+## Assignment 3 starts on line 132
 # -------------------------------------------------------------------------------
   
 ## plotting a histogram to explore age ranges in the data 
@@ -152,7 +162,7 @@ dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
     print(plot_richness(s,measures = c("Shannon", "Simpson")))
   }
 
-  #the alpha diversity richness plots will reproduce if you run the line individually, otherwise a warning message is produced.
+  #these plots will reproduce if you run the line individually, otherwise a warning message is produce.
   #I spoke to a lab member and the singletons have been removed with DADA2 processing but 
   # they recommended dismissing the warning message and running the code one line at a time.
   
