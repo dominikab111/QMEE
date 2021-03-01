@@ -45,13 +45,6 @@ head(taxtab)
 all(rownames(mapfile) %in% colnames(asvtab))
 rownames(mapfile)[!(rownames(mapfile) %in% colnames(asvtab))]
 
-rs <- rownames(mapfile)
-bad <- which(!rs %in% colnames(asvtab))
-if (length(bad)>0) {
-  stop("non-matching rownames: ",
-       paste(rs[bad], collapse=", "))
-}
-
 rownames(mapfile)
 colnames(asvtab) 
 
@@ -60,13 +53,6 @@ colnames(asvtab)
 
 all(colnames(asvtab) %in% rownames(mapfile))
 colnames(asvtab)[!(colnames(asvtab) %in% rownames(mapfile))]
-
-rs <- colnames(mapfile)
-bad <- which(!rs %in% colnames(asvtab))
-if (length(bad)>0) {
-  stop("non-matching colnames: ",
-       paste(rs[bad], collapse=", "))
-}
 
 #Convert to matrices -----------------------------------------------------------
 #To use this data in a phyloseq object we must convert our dataframes 

@@ -45,13 +45,6 @@ head(taxtab)
 all(rownames(mapfile) %in% colnames(asvtab))
 rownames(mapfile)[!(rownames(mapfile) %in% colnames(asvtab))]
 
-rs <- rownames(mapfile)
-bad <- which(!rs %in% colnames(asvtab))
-if (length(bad)>0) {
-  stop("non-matching rownames: ",
-       paste(rs[bad], collapse=", "))
-}
-
 rownames(mapfile)
 colnames(asvtab) 
 
@@ -60,13 +53,6 @@ colnames(asvtab)
 
 all(colnames(asvtab) %in% rownames(mapfile))
 colnames(asvtab)[!(colnames(asvtab) %in% rownames(mapfile))]
-
-rs <- colnames(mapfile)
-bad <- which(!rs %in% colnames(asvtab))
-if (length(bad)>0) {
-  stop("non-matching colnames: ",
-       paste(rs[bad], collapse=", "))
-}
 
 #Convert to matrices -----------------------------------------------------------
 #To use this data in a phyloseq object we must convert our dataframes 
@@ -111,10 +97,10 @@ samdat_clean = data.frame(sample_data(dat)) #make a dataframe
 
 dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
 
-#subset data into nasal and oral samples
-dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
-dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
-
+----------------------------------------------------------
+  ## Assignment 4
+----------------------------------------------------------
+  
 # testing compositional differences between sample types
 
 bray_d <- phyloseq::distance(dat_rel, method = "bray") #calculate bray curtis dissimilarity
@@ -141,22 +127,28 @@ print(alpha_div)
 
 as.data.frame(mapfile)
 
+permdat <- merge(mapfile, alpha_div, by="row.names") #merging the alpha diversity calculations to the sample mapfile
+
 #brute force permutation test
 set.seed(101) ##for reproducibility
 nsim <- 9999
 res <- numeric(nsim) ##set aside space for results
 for (i in 1:nsim) {
   ## standard approach: scramble response value
-  perm <- sample(nrow(mapfile))
-  bdat <- transform(mapfile,Age=Age[perm])
+  perm <- sample(nrow(permdat))
+  bdat <- base::transform(permdat,diversity_shannon=diversity_shannon[perm])
   ## compute & store difference in means; store the value
-  res[i] <- mean(bdat$mapfile[bdat$Time=="Baseline"])-
-    mean(bdat$mapfile[bdat$Time=="FollowUp"])
+  res[i] <- mean(bdat$diversity_shannon[bdat$Time=="Baseline"])-
+    mean(bdat$diversity_shannon[bdat$Time=="FollowUp"])
 }
-obs <- mean(mapfile$Age[mapfile$Time=="Baseline"])-
-  mean(mapfile$Age[mapfile$Time=="FollowUp"])
+obs <- mean(permdat$diversity_shannon[permdat$Time=="Baseline"])-
+  mean(permdat$diversity_shannon[permdat$Time=="FollowUp"])
 ## append the observed value to the list of results
-res <- c(res,obs)
+difference_between_means <- c(res,obs)
 
-hist(res,col="grey",las=1, main="")
+hist(difference_between_means,col="gray",las=1, main="")
 abline(v=obs,col="red")
+
+2*mean(res>=obs) ##doubling the p value
+
+mean(abs(res)>=abs(obs)) ##counting both tails
