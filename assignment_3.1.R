@@ -102,7 +102,7 @@ dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
 dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
   
 #-------------------------------------------------------------------------------
-## Assignment 3 starts on line 122
+## Assignment 3
 # -------------------------------------------------------------------------------
   
 ## plotting a histogram to explore age ranges in the data 
