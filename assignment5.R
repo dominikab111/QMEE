@@ -97,9 +97,11 @@ samdat_clean = data.frame(sample_data(dat)) #make a dataframe
 
 dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
 
--------------------------------------------------------------------------------
+## JD: Your code is meant to run from beginning to end; did you try it?
+## These dashed lines break it until I commented them out
+## -----------------------------------------------------------------------
 ##Assignment 5
--------------------------------------------------------------------------------
+## -----------------------------------------------------------------------
 
   #calculate alpha diversity
 alpha_div <- microbiome::alpha(dat_rel, index = "diversity_shannon")
