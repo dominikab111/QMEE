@@ -5,18 +5,23 @@
 #load your packages
 library(vegan)
 library(tidyverse)
+## BMB: tidyverse includes both dplyr and ggplot2, avoid redundant code ...
+## library(dplyr)
+## library(ggplot2)
 library(phyloseq)
 library(microbiome)
-library(dplyr)
+
+
 #if(!requireNamespace("BiocManager", quietly = TRUE)){
 #install.packages("BiocManager")
 #} 
 #BiocManager::install("phyloseq")
 #install.packages(c("devtools", "RcppEigen", "RcppParallel", "Rtsne", "ggforce", "units"))
-library(ggplot2)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
 
-setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+
+## BMB: please DON'T use setwd() (if it has to be in here, comment it out)
+## setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
 #import csv files ----
 asvtab = read.csv("asvtab.csv") #asv frequency table
 taxtab = read.csv("taxatab.csv") #taxonomy file
@@ -42,9 +47,12 @@ head(taxtab)
 #checks if the rownames in samdat match the colnames of asvtab. prints a logical response
 #next line will print out the sample IDs that do not match
 
+## BMB: it's good to put stopifnot() around these: it will automatically
+## stop your script if the conditions you want to be true aren't ...
 all(rownames(mapfile) %in% colnames(asvtab))
-rownames(mapfile)[!(rownames(mapfile) %in% colnames(asvtab))]
+length(rownames(mapfile)[!(rownames(mapfile) %in% colnames(asvtab))])==0
 
+## BMB: didn't you print out the rownames of the mapfile just a few lines ago?
 rownames(mapfile)
 colnames(asvtab) 
 
@@ -53,6 +61,7 @@ colnames(asvtab)
 
 all(colnames(asvtab) %in% rownames(mapfile))
 colnames(asvtab)[!(colnames(asvtab) %in% rownames(mapfile))]
+## BMB: should this be empty?
 
 #Convert to matrices -----------------------------------------------------------
 #To use this data in a phyloseq object we must convert our dataframes 
@@ -92,7 +101,8 @@ dat = prune_samples(sample_sums(dat)>2500, dat)
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
 
 #rarefy the data
-dat_rare = rarefy_even_depth(dat) 
+dat_rare = rarefy_even_depth(dat)
+## BMB: are you sure want to do this? This is a contentious step
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
 dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
@@ -105,26 +115,37 @@ dat_rel = transform_sample_counts(dat, function(x) x/sum(x))
 alpha_div <- microbiome::alpha(dat_rel, index = "diversity_shannon")
 permdat <- merge(mapfile, alpha_div, by="row.names") #merging the alpha diversity calculations to the sample mapfile
 
+## BMB: this is assignment 6, not 7 ... any particular reason
+## you're fitting GLMs? Are you combining these two assignments?
+
 ## using GLM to predict diversity based on age
 glm_age <- glm(diversity_shannon~Age, family=Gamma(link="log"), data=permdat)
 par(mfrow=c(2,2)) #allows viewing of all 4 plots at once
 summary(glm_age) #p value = 0.217
 plot(glm_age)
+## BMB: any conclusions about this plot? (Looks pretty good to me;
+## slight trend toward lower variability with increased Shannon diversity
+## (also, seems like a pretty narrow range of diversities: 0.78-0.88 ?
 
 #GLM predicting diversity based on sample type
 glm_st <- glm(diversity_shannon~Sample.Type, family=Gamma(link="log"), data=permdat)
 par(mfrow=c(2,2))
 summary(glm_st)
 plot(glm_st)
+## BMB: pretty boring (that's not a bad thing), as is typical of models with only one two-level categorical predictor
 
 #comparing to LM
 lm_age1 <- lm(log(diversity_shannon)~Age, data=permdat)
 par(mfrow=c(2,2)) 
 summary(lm_age1) # p value = 0.104
 plot(lm_age1)
+## BMB: the Q-Q plot at least looks worse .. 
 
 ## GLM predicting diversity based on sample type
 lm_st <- lm(log(diversity_shannon)~Sample.Type, data=permdat)
 par(mfrow=c(2,2))
 summary(lm_st) ## p value = 0.00257
 plot(lm_st, id.n=5)
+
+## BMB: any inferential plots?
+
