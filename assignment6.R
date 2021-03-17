@@ -1,4 +1,4 @@
-#Assignment 6 - generalized linear models 
+#Assignment 7 - generalized linear models 
 
 # Setup ------------------------------------------------------------------------
 
