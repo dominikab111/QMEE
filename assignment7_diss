@@ -1,4 +1,4 @@
-Assignment 6 - Discussion
+Assignment 7 - Discussion
 
 For the purpose of this assignment I created a generalized linear model (GLM) to test if a model predicting alpha diversity based on age and/or sample type is sufficient, and compared it to a linear model.My response variable is alpha diversity and it is a continuous variable. Due to this, I used family=Gamma(link="log") as my link funciton and overdispersion is not a concern.
 
