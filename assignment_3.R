@@ -1,4 +1,4 @@
-# Assignment 3 - producing beta diveristy and relative abundance plots
+# Assignment 3 - producing diversity and relative abundance plots
 
 # Setup ------------------------------------------------------------------------
 
