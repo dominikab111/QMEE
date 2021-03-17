@@ -1,4 +1,4 @@
-#Assignment 5 - linear models
+#Assignment 6 - linear models
 
 # Setup ------------------------------------------------------------------------
 
