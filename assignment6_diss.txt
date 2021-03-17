@@ -1,4 +1,4 @@
-#Assignment 5: linear models
+#Assignment 6: linear models
 
 JD: Not sure why it's a convention to use extensions for plain-text files, but it definitely is.
 
