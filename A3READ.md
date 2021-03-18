@@ -23,7 +23,7 @@ JD: I'm not sure you understand what you're plotting here: what's shown here is 
 
 Lastly, I plotted the relative abundance of both the nasal and oral samples to observe the compositional differences between these two sample sites. I chose to visualize the top 20 genera within the samples to narrow down the most common microbial organisms. From these plots, I am able to observe and assess the changes in microbial dominance within both the nasal and oral sample sites.
 
-JD: What's going on in the first page? Why do the saliva plots look so uninteresting and so different from the nasal plots? What do (or might) you learn from these plots? 
+JD: What's going on in the first page? Why do the saliva plots look so uninteresting and so different from the nasal plots? What do (or might) you learn from these plots?  Why is there a weird smear of text across the bottom of the second page but not the first?
 
 Sidenote: I have also tried to reproduce alpha diversity plots, to observe diversity changes within both the nasal and oral swab samples. When I run the code, there is a warning message that states there are no singletons within my data. I spoke to a lab member and she stated this was a result of the DADA2 processing. We are aiming to see how we can fix this, but if the lines are run individually or seperately from the rest of the code, the plots will still be produced.
 
