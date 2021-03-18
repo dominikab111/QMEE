@@ -1,4 +1,4 @@
-# Assignment 4 - computing permutation tests
+#Assignment 7 - generalized linear models 
 
 # Setup ------------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ library(dplyr)
 #install.packages(c("devtools", "RcppEigen", "RcppParallel", "Rtsne", "ggforce", "units"))
 library(ggplot2)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
-
 #setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+
 #import csv files ----
 asvtab = read.csv("asvtab.csv") #asv frequency table
 taxtab = read.csv("taxatab.csv") #taxonomy file
@@ -85,64 +85,64 @@ dat
 summary(sample_sums(dat))
 sample_sums(dat)
 
-
-sample_data(dat)[sample_sums(dat) < 2500,]
+#remove samples with less than 2500 reads
+dat = prune_samples(sample_sums(dat)>2500, dat)
 
 #filter out mitochondria bacteria from host
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
 
-samdat_clean = data.frame(sample_data(dat)) #make a dataframe
+#rarefy the data
+dat_rare = rarefy_even_depth(dat) 
+
+#only working with nasal samples
+dat_nas = subset_samples(dat_rare, Sample.Type=='Nasal')
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
 
-dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
+dat_rel = transform_sample_counts(dat_nas, function(x) x/sum(x)) 
 
-#subset data into nasal and oral samples
-dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
-dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
-
-# testing compositional differences between sample types
-
-bray_d <- phyloseq::distance(dat_rel, method = "bray") #calculate bray curtis dissimilarity
-
-vegan::adonis(bray_d ~ phyloseq::sample_data(dat_rel)$Sample.Type)
-dispr <- vegan::betadisper(bray_d, phyloseq::sample_data(dat_rel)$Sample.Type)
-dispr
-plot(dispr, main = "Ordination Centroids and Dispersion Labelled: Bray Curtis Dissimilarity Sample Types")
-
-permutest(dispr) 
-
-# testing compositional differences between sexes (m/f)
-
-vegan::adonis(bray_d ~ phyloseq::sample_data(dat_rel)$Sex)
-dispr_s <- vegan::betadisper(bray_d, phyloseq::sample_data(dat_rel)$Sex)
-dispr_s
-plot(dispr_s, main = "Ordination Centroids and Dispersion Labelled: Bray Curtis Dissimilarity Sexes")
-permutest(dispr_s)
-
-#calculating alpha diversity
-
+#-------------------------------------------------------------------------------
+  ##Assignment 7
+#-------------------------------------------------------------------------------
+  
+#calculate alpha diversity
 alpha_div <- microbiome::alpha(dat_rel, index = "diversity_shannon")
-print(alpha_div)
+permdat <- merge(mapfile, alpha_div, by="row.names") #merging the alpha diversity calculations to the sample mapfile
 
-as.data.frame(mapfile)
+# hypothesis: alpha diversity will be negatively associated with age
+glm_age <- glm(diversity_shannon~Age, family=Gamma(link="log"), data=permdat)
+par(mfrow=c(2,2)) #allows viewing of all 4 plots at once
+plot(glm_age)
+summary(glm_age) #p value = 0.217
+#plot discussion
+#residuals vs fitted: the red line is relatively flat, therefore we can infer there are no
+#non-linear relationships present
+#normal q-q: the data points remain diagonally straight therefore there is little data that is not 
+#normally distributed
+#scale-location: the red line seems relatively straight which indicates there is little heteroscedasticity within this model
+#residuals vs leverage: I cannot see the Cook's contours/distance lines so this is not a concern - I am assuming everything is okay here 
+#and there are no data points that should be treated as outliers.
 
-#brute force permutation test
-set.seed(101) ##for reproducibility
-nsim <- 9999
-res <- numeric(nsim) ##set aside space for results
-for (i in 1:nsim) {
-  ## standard approach: scramble response value
-  perm <- sample(nrow(mapfile))
-  bdat <- transform(mapfile,Age=Age[perm])
-  ## compute & store difference in means; store the value
-  res[i] <- mean(bdat$mapfile[bdat$Time=="Baseline"])-
-    mean(bdat$mapfile[bdat$Time=="FollowUp"])
-}
-obs <- mean(mapfile$Age[mapfile$Time=="Baseline"])-
-  mean(mapfile$Age[mapfile$Time=="FollowUp"])
-## append the observed value to the list of results
-res <- c(res,obs)
+#comparing to linear model
+lm_age <- lm(log(diversity_shannon)~Age, data=permdat)
+par(mfrow=c(2,2)) 
+plot(lm_age)
+summary(lm_age) # p value = 0.104
+#plot discussion
+#residuals vs fitted: the red line is almost perfectly flat, indicating there are no non-linear relationships
+# in the model with alpha diversity and age
+#normal q-q: the data points form an upside down 'U' shape and do not entirely follow the diagonal line. There may
+# be some data that are not normally distributed, but are mostly okay.
+#scale - location: the red line is sloped downwards which could indicate some heteroscedasticity (change in variance) within this dataset/model,
+#and may be concerning
+#residuals vs leverage: I can just vaguely see the Cook's contour/distance line as '0.5' in the bottom right hand corner - but no points 
+#lie past this line so again, I will not treat any data points as outliers. 
 
-hist(res,col="grey",las=1, main="")
-abline(v=obs,col="red")
+#Rather than an inferential model, I decided to produce a linear regression model showing the 
+#relationship between diversity & age in samples collected from the nasal cavity region
+
+lm_age_div_nas <- ggplot(permdat, aes(x=Age, y=diversity_shannon, ylab = "Alpha diversity")) +
+  geom_point(shape=1) + #use hollow circles
+  geom_smooth(method=lm) #add a linear regression line
+lm_age_div_nas
+#alpha diversity seems to slightly decrease with age in nasal swab samples

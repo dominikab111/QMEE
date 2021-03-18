@@ -1,4 +1,4 @@
-#Assignment 5 - linear models
+# Assignment 3 - producing diversity and relative abundance plots
 
 # Setup ------------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ library(dplyr)
 #install.packages(c("devtools", "RcppEigen", "RcppParallel", "Rtsne", "ggforce", "units"))
 library(ggplot2)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
-
 #setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+
 #import csv files ----
 asvtab = read.csv("asvtab.csv") #asv frequency table
 taxtab = read.csv("taxatab.csv") #taxonomy file
@@ -85,36 +85,86 @@ dat
 summary(sample_sums(dat))
 sample_sums(dat)
 
-
-sample_data(dat)[sample_sums(dat) < 2500,]
+#remove samples with less than 2500 reads
+dat = prune_samples(sample_sums(dat)>2500, dat)
 
 #filter out mitochondria bacteria from host
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
 
-samdat_clean = data.frame(sample_data(dat)) #make a dataframe
+#rarefy the data
+dat_rare = rarefy_even_depth(dat) 
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
-
 dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
+  
+#subset data into nasal and oral samples
+dat.nasal = subset_samples(dat_rel, Sample.Type=='Nasal')
+dat.sal = subset_samples(dat_rel, Sample.Type=='Saliva')
+  
+#-------------------------------------------------------------------------------
+## Assignment 3
+# -------------------------------------------------------------------------------
+  
+## plotting a histogram to explore age ranges in the data 
+  hist(mapfile$Age,
+       main= "Histogram of Participants Age",
+       xlab="Age",
+       border= "navy blue",
+       col="maroon",
+       breaks=10,
+       prob=TRUE)
+  
+  lines(density(mapfile$Age)) # add lines to observe density
+  
+  ## Plotting alpha diversity 
+  
+  #Plot richness for nasal samples
+  plot_richness(dat.nasal,measures=c("Shannon", "Simpson"))  +
+                theme(panel.background = element_blank(),
+                axis.text.x=element_blank(),
+                axis.ticks.x=element_blank())
+ 
+  #Plot richness for saliva samples
+  plot_richness(dat.sal, measures = c("Shannon", "Simpson")) +
+                theme(panel.background = element_blank(),
+                axis.text.x=element_blank(),
+                axis.ticks.x=element_blank())
+  
+  #different way of plotting alpha diversity (potentially more efficient)
+  
+  types <- unique(sample_data(dat_rel)$Sample.Type)
+  for (tt in types) {
+    s <- subset_samples(dat, Sample.Type==tt)
+    print(plot_richness(s,measures = c("Shannon", "Simpson")))
+  }
+  
+  # Plotting beta diversity
+  
+  ordu <- ordinate(dat.nasal, "PCoA", "bray", weighted = TRUE)
+  plot_ordination(dat.nasal, ordu, color="Age", shape="Time",
+                  title = "Bray Curtis Dissimilartiy of Nasal samples against Time")
+  plot_ordination(dat.nasal, ordu, color="Age", shape="Sex",
+                  title = "Bray Curtis Dissimilarity of Nasal samples against Sex")
+  
+  # Plotting relative abundance
+  
+  #to get the top 20 genera in the samples 
+  top20 <- names(sort(taxa_sums(dat_rel), decreasing=TRUE))[1:20]
+  dat.top20 <- transform_sample_counts(dat_rel, function(OTU) OTU/sum(OTU))
+  dat.top20 <- prune_taxa(top20, dat.top20)
+  
+  # plotting the taxa bar plots
+  phyloseq::plot_bar(dat.top20, fill = "Genus") +
+    geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "stack", width = 1) +
+    labs(x = "", y = "Relative Abundance\n") +
+    theme(panel.background = element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
 
-## JD: Your code is meant to run from beginning to end; did you try it?
-## These dashed lines break it until I commented them out
-## -----------------------------------------------------------------------
-##Assignment 5
-## -----------------------------------------------------------------------
-
-  #calculate alpha diversity
-alpha_div <- microbiome::alpha(dat_rel, index = "diversity_shannon")
-permdat <- merge(mapfile, alpha_div, by="row.names") #merging the alpha diversity calculations to the sample mapfile
-
-## linear regression model: predicting diversity based on age
-lmage <- lm(diversity_shannon~Age, data= permdat)
-par(mfrow=c(2,2)) ##views al 4 plots at once
-summary(lmage) ##p value = 0.1372 
-plot(lmage, id.n=5) #approx 5 outliers passed Cook's distance line
-
-## linear regression model: predicting diversity based on sample type
-lmst <- lm(diversity_shannon~Sample.Type, data= permdat)
-par(mfrow=c(2,2))
-summary(lmst) ## p value = 0.01502
-plot(lmst, id.n=5)
+  phyloseq::plot_bar(dat.top20, fill = "Genus") +
+    geom_bar(aes(color = Genus, fill = Genus), stat = "identity", position = "stack", width = 1) +
+    labs(x = "", y = "Relative Abundance\n") +
+    facet_wrap(~ Sample.Type, scales = "free")
+    theme(panel.background = element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())

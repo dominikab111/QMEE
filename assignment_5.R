@@ -1,4 +1,4 @@
-# Assignment 4 - computing permutation tests
+# Assignment 5 - Permutation tests
 
 # Setup ------------------------------------------------------------------------
 
@@ -15,8 +15,8 @@ library(dplyr)
 #install.packages(c("devtools", "RcppEigen", "RcppParallel", "Rtsne", "ggforce", "units"))
 library(ggplot2)
 ## install.packages("BiocManager"); BiocManager::install("microbiome")
-
 #setwd('/Users/DOMO/Documents/McMaster_University/Surette_lab/Weston_analysis')
+
 #import csv files ----
 asvtab = read.csv("asvtab.csv") #asv frequency table
 taxtab = read.csv("taxatab.csv") #taxonomy file
@@ -85,21 +85,21 @@ dat
 summary(sample_sums(dat))
 sample_sums(dat)
 
-
-sample_data(dat)[sample_sums(dat) < 2500,]
+#remove samples with less than 2500 reads
+dat = prune_samples(sample_sums(dat)>2500, dat)
 
 #filter out mitochondria bacteria from host
 dat = subset_taxa(dat, Kingdom=="Bacteria", Family!="Mitochondria")
 
-samdat_clean = data.frame(sample_data(dat)) #make a dataframe
+#rarefy the data
+dat_rare = rarefy_even_depth(dat) 
 
 #transform asv counts into relative abundance data (i.e. calculate relative abundance) 
-
 dat_rel = transform_sample_counts(dat, function(x) x/sum(x)) 
 
-----------------------------------------------------------
-  ## Assignment 4
-----------------------------------------------------------
+#----------------------------------------------------------
+  ## Assignment 5
+#----------------------------------------------------------
   
 # testing compositional differences between sample types
 
