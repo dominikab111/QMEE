@@ -143,6 +143,14 @@ summary(lm_age) # p value = 0.104
 
 lm_age_div_nas <- ggplot(permdat, aes(x=Age, y=diversity_shannon, ylab = "Alpha diversity")) +
   geom_point(shape=1) + #use hollow circles
+  geom_smooth(method="glm", method.args=list(family="Gamma"(link="log")), color="red") +
   geom_smooth(method=lm) #add a linear regression line
 lm_age_div_nas
 #alpha diversity seems to slightly decrease with age in nasal swab samples
+
+## JD: Not clear why you compared diagnostics; might have been more interesting to compare model results.
+## JD: I tried that myself above; you almost can't see the difference between the glm and lm fit. Still not sure whether they're significant.
+
+## Inference means what we think we've learned from statistics. Your extra plot was an lm, not a glm. And you didn't investigate or discuss anything about CIs or P values
+
+## Grade 1.8/3
