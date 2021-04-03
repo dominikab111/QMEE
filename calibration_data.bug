@@ -3,7 +3,7 @@ model {
     y[i] ~ dnorm(pred[i], tau)
     pred[i] <- mx*x[i] + int
   }
-  ##priors ("vague"/"flat"/"weak"/"uninformative)
+  ##priors ("vague"/"flat"/"weak"/"uninformative")
   mx ~ dnorm (0, .001)
   int ~ dnorm(0, 0.001)
   tau ~ dgamma(0.001, 0.001)
